@@ -6,13 +6,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 import org.philips.solid.app.controller.dao.BrandDao;
+import org.philips.solid.app.controller.dao.ModelDao;
 import org.philips.solid.app.model.Brand;
+import org.philips.solid.app.model.Model;
 
-public class DatabaseBootstrap {
+public class DatabaseBootstrapper {
 
-    private static final String CREATE_BRAND_SEQ = " CREATE SEQUENCE BRAND_SEQ START WITH 0 INCREMENT BY 1 ";
-    private static final String CREATE_MODEL_SEQ = " CREATE SEQUENCE MODEL_SEQ START WITH 0 INCREMENT BY 1 ";
-    private static final String CREATE_VEHICLE_SEQ = " CREATE SEQUENCE VEHICLE_SEQ START WITH 0 INCREMENT BY 1 ";
+    private static final String CREATE_BRAND_SEQ = " CREATE SEQUENCE BRAND_SEQ START WITH 1 INCREMENT BY 1 ";
+    private static final String CREATE_MODEL_SEQ = " CREATE SEQUENCE MODEL_SEQ START WITH 1 INCREMENT BY 1 ";
+    private static final String CREATE_VEHICLE_SEQ = " CREATE SEQUENCE VEHICLE_SEQ START WITH 1 INCREMENT BY 1 ";
 
     private static final String CREATE_BRAND_TABLE = " CREATE TABLE BRAND ("
             + "ID INT DEFAULT NEXT VALUE FOR BRAND_SEQ PRIMARY KEY, "
@@ -39,6 +41,9 @@ public class DatabaseBootstrap {
 
     private static final String INSERT_MODEL = " INSERT INTO MODEL (NAME, IS_AUTOMATIC, IS_COMBUSTION, ID_BRAND) "
             + " VALUES (?, ?, ?, ?) ";
+    
+    private static final String INSERT_VEHICLE = " INSERT INTO VEHICLE (COLOR, PRICE, ID_MODEL) "
+            + " VALUES (?, ?, ?) ";
 
     public static final void bootstrap() throws SQLException {
         // Create tables
@@ -48,10 +53,10 @@ public class DatabaseBootstrap {
         execSql(CREATE_MODEL_TABLE);
         execSql(CREATE_VEHICLE_SEQ);
         execSql(CREATE_VEHICLE_TABLE);
-        // Generate brands
+        // Generate mocked data
         createBrands();
-        // Generate models
         createModels();
+        createVehicles();
     }
 
     private static void execSql(final String sql) throws SQLException {
@@ -75,7 +80,7 @@ public class DatabaseBootstrap {
     private static void createModels() throws SQLException {
         final List<Brand> brands = BrandDao.getBrands();
         final String[] models = new String[]{"ModelCarOne", "Mk2", "MXE", "TurboV4", "CoolCarKid", "BetterThanYours"};
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 100; i++) {
             final int brandPos = getNum(brands.size());
             final int modelPos = getNum(models.length);
             final long brandId = brands.get(brandPos).getId();
@@ -90,7 +95,33 @@ public class DatabaseBootstrap {
             ConnectionFactory.close(conn);
         }
     }
-    
+
+    private static void createVehicles() throws SQLException {
+        final String[] colors = new String[]{"Branco", "Preto", "Prata", "Azul", "Vermelho"};
+        final List<Brand> brands = BrandDao.getBrands();
+        for (int i = 0; i < 250; i++) {
+            final int brandPos = getNum(brands.size());
+            final Brand brand = brands.get(brandPos);
+            final List<Model> models = ModelDao.getModelsByBrand(brand.getId());
+            if (models.isEmpty()) {
+                i = i - 1;
+                continue;
+            }
+            final int modelPos = getNum(models.size());
+            final Model model = models.get(modelPos);
+            final int colorPos = getNum(colors.length);
+            final String color = colors[colorPos];
+            final double price = 50000 + (getNum(150) * 1000);
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement(INSERT_VEHICLE);
+            ps.setString(1, color);
+            ps.setDouble(2, price);
+            ps.setLong(3, model.getId());
+            ps.execute();
+            ConnectionFactory.close(conn);
+        }        
+    }
+
     private static String getYesNo() {
         return getNum(2) == 1 ? "Y" : "N";
     }

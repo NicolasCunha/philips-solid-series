@@ -5,9 +5,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 import org.philips.solid.app.controller.dao.BrandDao;
 import org.philips.solid.app.controller.dao.ModelDao;
-import org.philips.solid.app.controller.db.ConnectionFactory;
+import org.philips.solid.app.controller.dao.VehicleDao;
 import org.philips.solid.app.model.Brand;
 import org.philips.solid.app.model.Model;
+import org.philips.solid.app.model.Vehicle;
 
 public class AppView extends javax.swing.JFrame {
 
@@ -52,26 +53,34 @@ public class AppView extends javax.swing.JFrame {
 
         vehicleTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID", "Cor", "Preço", "Modelo", "Marca"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Long.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         vehicleTableScrollPane.setViewportView(vehicleTable);
 
         javax.swing.GroupLayout vehiclePanelLayout = new javax.swing.GroupLayout(vehiclePanel);
         vehiclePanel.setLayout(vehiclePanelLayout);
         vehiclePanelLayout.setHorizontalGroup(
             vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(vehicleTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE)
+            .addComponent(vehicleTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
         );
         vehiclePanelLayout.setVerticalGroup(
             vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(vehicleTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+            .addComponent(vehicleTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
         );
 
         tabbedPaneContainer.addTab("Veículos", vehiclePanel);
@@ -98,11 +107,11 @@ public class AppView extends javax.swing.JFrame {
         brandPanel.setLayout(brandPanelLayout);
         brandPanelLayout.setHorizontalGroup(
             brandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(brandTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE)
+            .addComponent(brandTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
         );
         brandPanelLayout.setVerticalGroup(
             brandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(brandTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+            .addComponent(brandTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
         );
 
         tabbedPaneContainer.addTab("Marcas", brandPanel);
@@ -129,11 +138,11 @@ public class AppView extends javax.swing.JFrame {
         modelPanel.setLayout(modelPanelLayout);
         modelPanelLayout.setHorizontalGroup(
             modelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(modelTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE)
+            .addComponent(modelTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
         );
         modelPanelLayout.setVerticalGroup(
             modelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(modelTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+            .addComponent(modelTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
         );
 
         tabbedPaneContainer.addTab("Modelos", modelPanel);
@@ -172,33 +181,35 @@ public class AppView extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabbedPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 811, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(tabbedPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 742, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnNovo)
+                        .addGap(33, 33, 33))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnEditar)
+                            .addComponent(btnExcluir)
+                            .addComponent(btnSair))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(50, 50, 50)
-                        .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(tabbedPaneContainer)))
+                .addGap(35, 35, 35)
+                .addComponent(tabbedPaneContainer)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(54, 54, 54)
+                .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -212,13 +223,35 @@ public class AppView extends javax.swing.JFrame {
         final JTabbedPane pane = (JTabbedPane) evt.getSource();
         switch (pane.getSelectedIndex()) {
             case 0:
-                loadVehicles();
+                final List<Vehicle> vehicles = VehicleDao.getVehicles();
+                final DefaultTableModel vehicleTblModel = (DefaultTableModel) vehicleTable.getModel();
+                vehicleTblModel.setRowCount(0);
+                vehicles.forEach(vehicle -> {
+                    vehicleTblModel.addRow(new Object[]{
+                        vehicle.getId(), vehicle.getColor(), vehicle.getPrice(),
+                        vehicle.getModel().getName(), vehicle.getBrand().getName()});
+                });
+                vehicleTable.setModel(vehicleTblModel);
                 break;
             case 1:
-                loadBrands();
+                final List<Brand> brands = BrandDao.getBrands();
+                final DefaultTableModel brandTblModel = (DefaultTableModel) brandTable.getModel();
+                brandTblModel.setRowCount(0);
+                brands.forEach(brand -> {
+                    brandTblModel.addRow(new Object[]{brand.getId(), brand.getName()});
+                });
+                brandTable.setModel(brandTblModel);
                 break;
             case 2:
-                loadModels();
+                final List<Model> models = ModelDao.getModels();
+                final DefaultTableModel modelTblModel = (DefaultTableModel) modelTable.getModel();
+                modelTblModel.setRowCount(0);
+                models.forEach(model -> {
+                    modelTblModel.addRow(new Object[]{model.getId(), model.getName(),
+                        model.isAutomatic(), model.isCombustion(),
+                        model.getBrand().getName()});
+                });
+                modelTable.setModel(modelTblModel);
                 break;
         }
     }//GEN-LAST:event_tabbedPaneContainerStateChanged
@@ -234,68 +267,6 @@ public class AppView extends javax.swing.JFrame {
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnSairActionPerformed
-
-    private void loadVehicles() {
-        ConnectionFactory.getConnection();
-    }
-
-    private void loadBrands() {
-        final List<Brand> brands = BrandDao.getBrands();
-        final DefaultTableModel tblModel = (DefaultTableModel) brandTable.getModel();
-        tblModel.setRowCount(0);
-        brands.forEach(brand -> {
-            tblModel.addRow(new Object[]{brand.getId(), brand.getName()});
-        });
-        brandTable.setModel(tblModel);
-    }
-
-    private void loadModels() {
-        final List<Model> models = ModelDao.getModels();
-        final DefaultTableModel tblModel = (DefaultTableModel) modelTable.getModel();
-        tblModel.setRowCount(0);
-        models.forEach(model -> {
-            tblModel.addRow(new Object[]{model.getId(), model.getName(), 
-                model.isAutomatic(), model.isCombustion(), 
-                model.getBrand().getName()});
-        });
-        modelTable.setModel(tblModel);
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AppView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AppView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AppView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AppView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AppView().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel brandPanel;

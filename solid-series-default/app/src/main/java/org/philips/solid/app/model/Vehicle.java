@@ -2,17 +2,25 @@ package org.philips.solid.app.model;
 
 public class Vehicle implements CarBehavior {
 
-    private int id;
+    private long id;
     private String color;
     private Double price;
     private Brand brand;
     private Model model;
 
-    public int getId() {
+    public Vehicle(long id, String color, Double price, Brand brand, Model model) {
+        this.id = id;
+        this.color = color;
+        this.price = price;
+        this.brand = brand;
+        this.model = model;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
