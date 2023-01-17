@@ -80,7 +80,7 @@ public class DatabaseBootstrapper {
     private static void createModels() throws SQLException {
         final List<Brand> brands = BrandDao.getBrands();
         final String[] models = new String[]{"ModelCarOne", "Mk2", "MXE", "TurboV4", "CoolCarKid", "BetterThanYours"};
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 25; i++) {
             final int brandPos = getNum(brands.size());
             final int modelPos = getNum(models.length);
             final long brandId = brands.get(brandPos).getId();
@@ -99,7 +99,7 @@ public class DatabaseBootstrapper {
     private static void createVehicles() throws SQLException {
         final String[] colors = new String[]{"Branco", "Preto", "Prata", "Azul", "Vermelho"};
         final List<Brand> brands = BrandDao.getBrands();
-        for (int i = 0; i < 250; i++) {
+        for (int i = 0; i < 15; i++) {
             final int brandPos = getNum(brands.size());
             final Brand brand = brands.get(brandPos);
             final List<Model> models = ModelDao.getModelsByBrand(brand.getId());

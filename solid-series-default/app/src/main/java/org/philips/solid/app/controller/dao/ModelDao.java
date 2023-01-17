@@ -34,7 +34,7 @@ public class ModelDao {
             throw new RuntimeException(ex);
         }
     }
-    
+
     public static List<Model> getModelsByBrand(final long brandId) {
         try {
             final Brand brand = BrandDao.getBrand(brandId);
@@ -43,7 +43,7 @@ public class ModelDao {
             final PreparedStatement ps = conn.prepareStatement("SELECT * FROM MODEL WHERE ID_BRAND = ?");
             ps.setLong(1, brandId);
             final ResultSet rs = ps.executeQuery();
-            while (rs.next()) {                
+            while (rs.next()) {
                 final Model model = new Model(
                         rs.getLong("ID"),
                         rs.getString("NAME"),
@@ -58,15 +58,15 @@ public class ModelDao {
             throw new RuntimeException(ex);
         }
     }
-    
+
     public static Model getModel(final long modelId) {
         try {
             final Connection conn = ConnectionFactory.getConnection();
             final PreparedStatement ps = conn.prepareStatement("SELECT * FROM MODEL WHERE ID = ?");
             ps.setLong(1, modelId);
             final ResultSet rs = ps.executeQuery();
-            while (rs.next()) {                
-                final Brand brand = BrandDao.getBrand(rs.getLong("ID_BRAND")); 
+            while (rs.next()) {
+                final Brand brand = BrandDao.getBrand(rs.getLong("ID_BRAND"));
                 return new Model(
                         rs.getLong("ID"),
                         rs.getString("NAME"),
@@ -79,6 +79,68 @@ public class ModelDao {
             throw new RuntimeException(ex);
         }
         return null;
+    }
+
+    public static void createModel(final String name,
+            final String automatic,
+            final String combustion,
+            final Long brand) {
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("INSERT INTO MODEL (NAME, IS_AUTOMATIC, IS_COMBUSTION, ID_BRAND) VALUES (?, ?, ?, ?) ");
+            ps.setString(1, name);
+            ps.setString(2, automatic);
+            ps.setString(3, combustion);
+            ps.setLong(4, brand);
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static void updateModel(final long id,
+            final String name,
+            final String automatic,
+            final String combustion,
+            final long brandId) {
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("UPDATE MODEL SET NAME = ?, IS_AUTOMATIC = ?, IS_COMBUSTION = ?, ID_BRAND = ? WHERE ID = ?");
+            ps.setString(1, name);
+            ps.setString(2, automatic);
+            ps.setString(3, combustion);
+            ps.setLong(4, brandId);
+            ps.setLong(5, id);
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static void deleteModel(final long id) {
+        VehicleDao.deleteVehicleByModel(id);
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("DELETE FROM MODEL WHERE ID = ?");
+            ps.setLong(1, id);
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }    
+    
+    public static void deleteModelByBrand(final long brandId) {
+        getModelsByBrand(brandId).forEach(model -> {
+            VehicleDao.deleteVehicleByModel(model.getId());
+        });
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("DELETE FROM MODEL WHERE ID_BRAND = ?");
+            ps.setLong(1, brandId);
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

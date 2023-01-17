@@ -12,6 +12,7 @@ public class App {
         DatabaseBootstrapper.bootstrap();
         // Create app main window
         final JFrame frame = new AppView();
+        frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setTitle("Gerenciamento de Carros");

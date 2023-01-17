@@ -10,7 +10,7 @@ import org.philips.solid.app.controller.db.ConnectionFactory;
 import org.philips.solid.app.model.Brand;
 
 public class BrandDao {
-
+    
     public static Brand getBrand(final long id) {
         try {
             final Connection conn = ConnectionFactory.getConnection();
@@ -37,6 +37,42 @@ public class BrandDao {
                 brands.add(brand);
             }
             return brands;
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static void createBrand(final String name) {
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("INSERT INTO BRAND (NAME) VALUES (?) ");
+            ps.setString(1, name);
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static void updateBrand(final long id, 
+            final String name) {
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("UPDATE BRAND SET NAME = ? WHERE ID = ?");
+            ps.setString(1, name);
+            ps.setLong(2, id);
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static void deleteBrand(final long id) {
+        ModelDao.deleteModelByBrand(id);
+        try {
+            final Connection conn = ConnectionFactory.getConnection();
+            final PreparedStatement ps = conn.prepareStatement("DELETE FROM BRAND WHERE ID = ?");
+            ps.setLong(1, id);
+            ps.execute();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
