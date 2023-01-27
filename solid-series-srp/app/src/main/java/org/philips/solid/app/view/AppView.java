@@ -1,20 +1,25 @@
 package org.philips.solid.app.view;
 
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import org.philips.solid.app.controller.ui.BrandUiController;
 import org.philips.solid.app.controller.ui.ModelUiController;
-import org.philips.solid.app.controller.ui.UiController;
 import org.philips.solid.app.controller.ui.VehicleUiController;
 
 public class AppView extends javax.swing.JFrame {
 
-    private UiController vehicleUiController;
-    private UiController brandUiController;
-    private UiController modelUiController;
+    private VehicleUiController vehicleUiController;
+    private BrandUiController brandUiController;
+    private ModelUiController modelUiController;
     
     public AppView() {
         initComponents();
-        this.createUiControllers();
+        this.vehicleUiController = new VehicleUiController(this, vehicleTable);
+        this.brandUiController = new BrandUiController(this, brandTable);
+        this.modelUiController = new ModelUiController(this, modelTable);
+        SwingUtilities.invokeLater(() -> {
+            this.vehicleUiController.refreshData();
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -245,7 +250,7 @@ public class AppView extends javax.swing.JFrame {
 
     private void tabbedPaneContainerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabbedPaneContainerStateChanged
         if (!areControllerCreated()) {
-            createUiControllers();
+            return;
         }
         
         final JTabbedPane pane = (JTabbedPane) evt.getSource();

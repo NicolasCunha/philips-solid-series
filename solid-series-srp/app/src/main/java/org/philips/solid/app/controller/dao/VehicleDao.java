@@ -21,24 +21,7 @@ public class VehicleDao {
             final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 final Model model = ModelDao.getModel(rs.getLong("ID_MODEL"));
-                final Vehicle vehicle;
-                if (model.isCombustion()) {
-                    vehicle = new Vehicle(
-                            rs.getLong("ID"),
-                            rs.getString("COLOR"),
-                            rs.getDouble("PRICE"),
-                            model.getBrand(),
-                            model
-                    );
-                } else {
-                    vehicle = new ElectricVehicle(
-                            rs.getLong("ID"),
-                            rs.getString("COLOR"),
-                            rs.getDouble("PRICE"),
-                            model.getBrand(),
-                            model
-                    );
-                }
+                final Vehicle vehicle = getSpecificVehicleFromModel(rs, model);
                 vehicles.add(vehicle);
             }
             return vehicles;
@@ -50,29 +33,12 @@ public class VehicleDao {
     public static Vehicle getVehicle(final long id) {
         try {
             final Connection conn = ConnectionFactory.getConnection();
-            final List<Vehicle> vehicles = new ArrayList<>();
             final PreparedStatement ps = conn.prepareStatement("SELECT * FROM VEHICLE WHERE ID = ?");
             ps.setLong(1, id);
             final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 final Model model = ModelDao.getModel(rs.getLong("ID_MODEL"));
-                if (model.isCombustion()) {
-                    return new Vehicle(
-                            rs.getLong("ID"),
-                            rs.getString("COLOR"),
-                            rs.getDouble("PRICE"),
-                            model.getBrand(),
-                            model
-                    );
-                } else {
-                    return new ElectricVehicle(
-                            rs.getLong("ID"),
-                            rs.getString("COLOR"),
-                            rs.getDouble("PRICE"),
-                            model.getBrand(),
-                            model
-                    );
-                }
+                return getSpecificVehicleFromModel(rs, model);
             }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -131,6 +97,26 @@ public class VehicleDao {
             ps.execute();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    private static Vehicle getSpecificVehicleFromModel(final ResultSet rs, final Model model) throws SQLException {
+        if (model.isCombustion()) {
+            return new Vehicle(
+                    rs.getLong("ID"),
+                    rs.getString("COLOR"),
+                    rs.getDouble("PRICE"),
+                    model.getBrand(),
+                    model
+            );
+        } else {
+            return new ElectricVehicle(
+                    rs.getLong("ID"),
+                    rs.getString("COLOR"),
+                    rs.getDouble("PRICE"),
+                    model.getBrand(),
+                    model
+            );
         }
     }
 
