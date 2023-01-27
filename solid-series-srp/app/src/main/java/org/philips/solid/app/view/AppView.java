@@ -1,23 +1,20 @@
 package org.philips.solid.app.view;
 
-import java.util.List;
 import javax.swing.JTabbedPane;
-import javax.swing.table.DefaultTableModel;
-import org.philips.solid.app.controller.dao.BrandDao;
-import org.philips.solid.app.controller.dao.ModelDao;
-import org.philips.solid.app.controller.dao.VehicleDao;
+import org.philips.solid.app.controller.ui.BrandUiController;
+import org.philips.solid.app.controller.ui.ModelUiController;
+import org.philips.solid.app.controller.ui.UiController;
 import org.philips.solid.app.controller.ui.VehicleUiController;
-import org.philips.solid.app.model.Brand;
-import org.philips.solid.app.model.Model;
-import org.philips.solid.app.model.Vehicle;
 
 public class AppView extends javax.swing.JFrame {
 
-    private final VehicleUiController vehicleUiController;
+    private UiController vehicleUiController;
+    private UiController brandUiController;
+    private UiController modelUiController;
     
     public AppView() {
         initComponents();
-        this.vehicleUiController = new VehicleUiController();
+        this.createUiControllers();
     }
 
     @SuppressWarnings("unchecked")
@@ -232,77 +229,35 @@ public class AppView extends javax.swing.JFrame {
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         switch (this.tabbedPaneContainer.getSelectedIndex()) {
             case 0:
-                this.vehicleUiController.createVehicle(this);
-                this.vehicleUiController.refreshVehicles(vehicleTable);
+                this.vehicleUiController.create();
+                this.vehicleUiController.refreshData();
                 break;
             case 1:
-                CreateBrand createBrand = new CreateBrand(this, true);
-                createBrand.setVisible(true);
-                refreshBrand();
+                this.brandUiController.create();
+                this.brandUiController.refreshData();
                 break;
             case 2:
-                CreateModel createModel = new CreateModel(this, true);
-                createModel.setVisible(true);
-                refreshModel();
+                this.modelUiController.create();
+                this.modelUiController.refreshData();
                 break;
         }
     }//GEN-LAST:event_btnNovoActionPerformed
 
-    private void refreshModel() {
-        List<Model> models = ModelDao.getModels();
-        DefaultTableModel modelTblModel = (DefaultTableModel) modelTable.getModel();
-        modelTblModel.setRowCount(0);
-        models.forEach(model -> {
-            modelTblModel.addRow(new Object[]{model.getId(), model.getName(),
-                model.isAutomatic(), model.isCombustion(),
-                model.getBrand().getName()});
-        });
-        modelTable.setModel(modelTblModel);
-    }
-
-    private void refreshBrand() {
-        List<Brand> brands = BrandDao.getBrands();
-        DefaultTableModel brandTblModel = (DefaultTableModel) brandTable.getModel();
-        brandTblModel.setRowCount(0);
-        brands.forEach(brand -> {
-            brandTblModel.addRow(new Object[]{brand.getId(), brand.getName()});
-        });
-        brandTable.setModel(brandTblModel);
-    }
-
     private void tabbedPaneContainerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabbedPaneContainerStateChanged
+        if (!areControllerCreated()) {
+            createUiControllers();
+        }
+        
         final JTabbedPane pane = (JTabbedPane) evt.getSource();
         switch (pane.getSelectedIndex()) {
             case 0:
-                List<Vehicle> vehicles = VehicleDao.getVehicles();
-                DefaultTableModel vehicleTblModel = (DefaultTableModel) vehicleTable.getModel();
-                vehicleTblModel.setRowCount(0);
-                vehicles.forEach(vehicle -> {
-                    vehicleTblModel.addRow(new Object[]{
-                        vehicle.getId(), vehicle.getColor(), vehicle.getPrice(),
-                        vehicle.getModel().getName(), vehicle.getBrand().getName()});
-                });
-                vehicleTable.setModel(vehicleTblModel);
+                this.vehicleUiController.refreshData();
                 break;
             case 1:
-                List<Brand> brands = BrandDao.getBrands();
-                DefaultTableModel brandTblModel = (DefaultTableModel) brandTable.getModel();
-                brandTblModel.setRowCount(0);
-                brands.forEach(brand -> {
-                    brandTblModel.addRow(new Object[]{brand.getId(), brand.getName()});
-                });
-                brandTable.setModel(brandTblModel);
+                this.brandUiController.refreshData();
                 break;
             case 2:
-                List<Model> models = ModelDao.getModels();
-                DefaultTableModel modelTblModel = (DefaultTableModel) modelTable.getModel();
-                modelTblModel.setRowCount(0);
-                models.forEach(model -> {
-                    modelTblModel.addRow(new Object[]{model.getId(), model.getName(),
-                        model.isAutomatic(), model.isCombustion(),
-                        model.getBrand().getName()});
-                });
-                modelTable.setModel(modelTblModel);
+                this.modelUiController.refreshData();
                 break;
         }
     }//GEN-LAST:event_tabbedPaneContainerStateChanged
@@ -310,50 +265,13 @@ public class AppView extends javax.swing.JFrame {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         switch (this.tabbedPaneContainer.getSelectedIndex()) {
             case 0:
-                int selectedVehicle = vehicleTable.getSelectedRow();
-                long vehicleId = (long) vehicleTable.getValueAt(selectedVehicle, 0);
-                EditVehicle editVehicle = new EditVehicle(this, true, vehicleId);
-                editVehicle.setVisible(true);
-                List<Vehicle> vehicles = VehicleDao.getVehicles();
-                DefaultTableModel vehicleTblModel = (DefaultTableModel) vehicleTable.getModel();
-                vehicleTblModel.setRowCount(0);
-                vehicles.forEach(vehicle -> {
-                    vehicleTblModel.addRow(new Object[]{
-                        vehicle.getId(), vehicle.getColor(), vehicle.getPrice(),
-                        vehicle.getModel().getName(), vehicle.getBrand().getName()});
-                });
-                vehicleTable.setModel(vehicleTblModel);
-                vehicleTable.setRowSelectionInterval(selectedVehicle, selectedVehicle);
+                this.vehicleUiController.update();
                 break;
             case 1:
-                int selectedBrand = brandTable.getSelectedRow();
-                long brandId = (long) brandTable.getValueAt(selectedBrand, 0);
-                EditBrand editBrand = new EditBrand(this, true, brandId);
-                editBrand.setVisible(true);
-                List<Brand> brands = BrandDao.getBrands();
-                DefaultTableModel brandTblModel = (DefaultTableModel) brandTable.getModel();
-                brandTblModel.setRowCount(0);
-                brands.forEach(brand -> {
-                    brandTblModel.addRow(new Object[]{brand.getId(), brand.getName()});
-                });
-                brandTable.setModel(brandTblModel);
-                brandTable.setRowSelectionInterval(selectedBrand, selectedBrand);
+                this.brandUiController.update();                
                 break;
             case 2:
-                int selectedModel = modelTable.getSelectedRow();
-                long modelId = (long) modelTable.getValueAt(selectedModel, 0);
-                EditModel editModel = new EditModel(this, true, modelId);
-                editModel.setVisible(true);
-                List<Model> models = ModelDao.getModels();
-                DefaultTableModel modelTblModel = (DefaultTableModel) modelTable.getModel();
-                modelTblModel.setRowCount(0);
-                models.forEach(model -> {
-                    modelTblModel.addRow(new Object[]{model.getId(), model.getName(),
-                        model.isAutomatic(), model.isCombustion(),
-                        model.getBrand().getName()});
-                });
-                modelTable.setModel(modelTblModel);
-                modelTable.setRowSelectionInterval(selectedModel, selectedModel);
+                this.modelUiController.update();                
                 break;
         }
     }//GEN-LAST:event_btnEditarActionPerformed
@@ -361,62 +279,13 @@ public class AppView extends javax.swing.JFrame {
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
         switch (this.tabbedPaneContainer.getSelectedIndex()) {
             case 0:
-                int selectedVehicle = vehicleTable.getSelectedRow();
-                long vehicleId = (long) vehicleTable.getValueAt(selectedVehicle, 0);
-                VehicleDao.deleteVehicle(vehicleId);
-                List<Vehicle> vehicles = VehicleDao.getVehicles();
-                DefaultTableModel vehicleTblModel = (DefaultTableModel) vehicleTable.getModel();
-                vehicleTblModel.setRowCount(0);
-                vehicles.forEach(vehicle -> {
-                    vehicleTblModel.addRow(new Object[]{
-                        vehicle.getId(), vehicle.getColor(), vehicle.getPrice(),
-                        vehicle.getModel().getName(), vehicle.getBrand().getName()});
-                });
-                vehicleTable.setModel(vehicleTblModel);
-                
-                if (selectedVehicle - 1 < 0) {
-                    selectedVehicle = 1;
-                }
-                
-                vehicleTable.setRowSelectionInterval(selectedVehicle - 1, selectedVehicle - 1);
+                this.vehicleUiController.delete();                
                 break;
             case 1:
-                int selectedBrand = brandTable.getSelectedRow();
-                long brandId = (long) brandTable.getValueAt(selectedBrand, 0);
-                BrandDao.deleteBrand(brandId);
-                List<Brand> brands = BrandDao.getBrands();
-                DefaultTableModel brandTblModel = (DefaultTableModel) brandTable.getModel();
-                brandTblModel.setRowCount(0);
-                brands.forEach(brand -> {
-                    brandTblModel.addRow(new Object[]{brand.getId(), brand.getName()});
-                });
-                brandTable.setModel(brandTblModel);
-                
-                if (selectedBrand - 1 < 0) {
-                    selectedBrand = 1;
-                }
-                
-                brandTable.setRowSelectionInterval(selectedBrand - 1, selectedBrand - 1);
+                this.brandUiController.delete();                
                 break;
             case 2:
-                int selectedModel = modelTable.getSelectedRow();
-                long modelId = (long) modelTable.getValueAt(selectedModel, 0);
-                ModelDao.deleteModel(modelId);
-                List<Model> models = ModelDao.getModels();
-                DefaultTableModel modelTblModel = (DefaultTableModel) modelTable.getModel();
-                modelTblModel.setRowCount(0);
-                models.forEach(model -> {
-                    modelTblModel.addRow(new Object[]{model.getId(), model.getName(),
-                        model.isAutomatic(), model.isCombustion(),
-                        model.getBrand().getName()});
-                });
-                modelTable.setModel(modelTblModel);
-                
-                if (selectedModel - 1 < 0) {
-                    selectedModel = 1;
-                }               
-                
-                modelTable.setRowSelectionInterval(selectedModel - 1, selectedModel - 1);
+                this.modelUiController.delete();
                 break;
         }
     }//GEN-LAST:event_btnExcluirActionPerformed
@@ -424,7 +293,7 @@ public class AppView extends javax.swing.JFrame {
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnSairActionPerformed
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel brandPanel;
     private javax.swing.JTable brandTable;
@@ -441,4 +310,16 @@ public class AppView extends javax.swing.JFrame {
     private javax.swing.JTable vehicleTable;
     private javax.swing.JScrollPane vehicleTableScrollPane;
     // End of variables declaration//GEN-END:variables
+
+    private void createUiControllers() {
+        this.vehicleUiController = new VehicleUiController(this, vehicleTable);
+        this.brandUiController = new BrandUiController(this, brandTable);
+        this.modelUiController = new ModelUiController(this, modelTable);
+    }
+    
+    private boolean areControllerCreated() {
+        return vehicleUiController != null
+                && brandUiController != null
+                && modelUiController != null;
+    }
 }
