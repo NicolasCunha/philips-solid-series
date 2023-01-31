@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.philips.solid.app.controller.db.ConnectionFactory;
 import org.philips.solid.app.model.ElectricVehicle;
+import org.philips.solid.app.model.HybridVehicle;
 import org.philips.solid.app.model.Model;
 import org.philips.solid.app.model.Vehicle;
 
@@ -101,23 +102,57 @@ public class VehicleDao {
     }
 
     private static Vehicle getSpecificVehicleFromModel(final ResultSet rs, final Model model) throws SQLException {
-        if (model.isCombustion()) {
-            return new Vehicle(
-                    rs.getLong("ID"),
-                    rs.getString("COLOR"),
-                    rs.getDouble("PRICE"),
-                    model.getBrand(),
-                    model
-            );
-        } else {
-            return new ElectricVehicle(
-                    rs.getLong("ID"),
-                    rs.getString("COLOR"),
-                    rs.getDouble("PRICE"),
-                    model.getBrand(),
-                    model
-            );
+        final Vehicle vehicle;
+        switch (model.getType()) {
+            case COMBUSTION:
+                vehicle = createVehicle(rs, model);
+                break;
+            case ELECTRIC:
+                vehicle = createElectricVehicle(rs, model);
+                break;
+            case HYBRID:
+                vehicle = createHybridVehicle(rs, model);
+                break;
+            default:
+                vehicle = null;
         }
+        return vehicle;
+    }
+
+    private static Vehicle createHybridVehicle(final ResultSet rs, final Model model) throws SQLException {
+        Vehicle vehicle;
+        vehicle = new HybridVehicle(
+                rs.getLong("ID"),
+                rs.getString("COLOR"),
+                rs.getDouble("PRICE"),
+                model.getBrand(),
+                model
+        );
+        return vehicle;
+    }
+
+    private static Vehicle createElectricVehicle(final ResultSet rs, final Model model) throws SQLException {
+        Vehicle vehicle;
+        vehicle = new ElectricVehicle(
+                rs.getLong("ID"),
+                rs.getString("COLOR"),
+                rs.getDouble("PRICE"),
+                model.getBrand(),
+                model
+        );
+        return vehicle;
+    }
+
+    private static Vehicle createVehicle(final ResultSet rs, final Model model) throws SQLException {
+        Vehicle vehicle;
+        vehicle = new Vehicle(
+                rs.getLong("ID"),
+                rs.getString("COLOR"),
+                rs.getDouble("PRICE"),
+                model.getBrand(),
+                model
+        );
+        return vehicle;
     }
 
 }

@@ -7,6 +7,7 @@ public class Model {
     private boolean automatic;
     private boolean combustion;
     private Brand brand;
+    private ModelEngineType type;
 
     public Model(long id, String name, boolean automatic, boolean combustion, Brand brand) {
         this.id = id;
@@ -55,5 +56,15 @@ public class Model {
     public void setCombustion(boolean combustion) {
         this.combustion = combustion;
     }
+
+    public ModelEngineType getType() {
+        return type;
+    }
+
+    public void setType(ModelEngineType type) {
+        this.type = type;
+    }
+    
+    
 
 }
