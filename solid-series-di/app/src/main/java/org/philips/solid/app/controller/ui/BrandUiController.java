@@ -11,49 +11,45 @@ import org.philips.solid.app.view.EditBrand;
 
 public class BrandUiController extends UiController {
 
-    public BrandUiController(JFrame parent, JTable table) {
-        super(parent, table);
-    }
-
     @Override
-    public void create() {
-        CreateBrand createBrand = new CreateBrand(this.getParent(), true);
+    public void create(final JFrame parent) {
+        CreateBrand createBrand = new CreateBrand(parent, true);
         createBrand.setVisible(true);
     }
 
     @Override
-    public void update() {
-        int selectedBrand = this.getTable().getSelectedRow();
-        long brandId = (long) this.getTable().getValueAt(selectedBrand, 0);
-        EditBrand editBrand = new EditBrand(this.getParent(), true, brandId);
+    public void update(final JFrame parent, final JTable table) {
+        int selectedBrand = table.getSelectedRow();
+        long brandId = (long) table.getValueAt(selectedBrand, 0);
+        EditBrand editBrand = new EditBrand(parent, true, brandId);
         editBrand.setVisible(true);
-        this.refreshData();
-        this.selectRow(selectedBrand);
+        this.refreshData(table);
+        this.selectRow(table, selectedBrand);
     }
 
     @Override
-    public void delete() {
-        int selectedBrand = this.getTable().getSelectedRow();
-        long brandId = (long) this.getTable().getValueAt(selectedBrand, 0);
+    public void delete(final JTable table) {
+        int selectedBrand = table.getSelectedRow();
+        long brandId = (long) table.getValueAt(selectedBrand, 0);
         BrandDao.deleteBrand(brandId);
-        this.refreshData();
+        this.refreshData(table);
         
         if (selectedBrand - 1 < 0) {
             selectedBrand = 1;
         }
 
-        this.selectRow(selectedBrand - 1);
+        this.selectRow(table, selectedBrand - 1);
     }
 
     @Override
-    public void refreshData() {
+    public void refreshData(final JTable table) {
         List<Brand> brands = BrandDao.getBrands();
-        DefaultTableModel brandTblModel = (DefaultTableModel) this.getTable().getModel();
+        DefaultTableModel brandTblModel = (DefaultTableModel) table.getModel();
         brandTblModel.setRowCount(0);
         brands.forEach(brand -> {
             brandTblModel.addRow(new Object[]{brand.getId(), brand.getName()});
         });
-        this.getTable().setModel(brandTblModel);
+        table.setModel(brandTblModel);
     }
 
 }

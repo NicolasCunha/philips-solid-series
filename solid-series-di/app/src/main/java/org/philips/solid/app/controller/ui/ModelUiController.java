@@ -11,51 +11,47 @@ import org.philips.solid.app.view.EditModel;
 
 public class ModelUiController extends UiController {
 
-    public ModelUiController(JFrame parent, JTable table) {
-        super(parent, table);
-    }
-
     @Override
-    public void create() {
-        CreateModel createModel = new CreateModel(this.getParent(), true);
+    public void create(final JFrame parent) {
+        CreateModel createModel = new CreateModel(parent, true);
         createModel.setVisible(true);
     }
 
     @Override
-    public void update() {
-        int selectedModel = this.getTable().getSelectedRow();
-        long modelId = (long) this.getTable().getValueAt(selectedModel, 0);
-        EditModel editModel = new EditModel(this.getParent(), true, modelId);
+    public void update(final JFrame parent, final JTable table) {
+        int selectedModel = table.getSelectedRow();
+        long modelId = (long) table.getValueAt(selectedModel, 0);
+        EditModel editModel = new EditModel(parent, true, modelId);
         editModel.setVisible(true);
-        this.refreshData();
-        this.selectRow(selectedModel);
+        this.refreshData(table);
+        this.selectRow(table, selectedModel);
     }
 
     @Override
-    public void delete() {
-        int selectedModel = this.getTable().getSelectedRow();
-        long modelId = (long) this.getTable().getValueAt(selectedModel, 0);
+    public void delete(final JTable table) {
+        int selectedModel = table.getSelectedRow();
+        long modelId = (long) table.getValueAt(selectedModel, 0);
         ModelDao.deleteModel(modelId);
-        this.refreshData();
+        this.refreshData(table);
 
         if (selectedModel - 1 < 0) {
             selectedModel = 1;
         }
 
-        this.selectRow(selectedModel - 1);
+        selectRow(table, selectedModel - 1);
     }
 
     @Override
-    public void refreshData() {
+    public void refreshData(final JTable table) {
         List<Model> models = ModelDao.getModels();
-        DefaultTableModel modelTblModel = (DefaultTableModel) this.getTable().getModel();
+        DefaultTableModel modelTblModel = (DefaultTableModel) table.getModel();
         modelTblModel.setRowCount(0);
         models.forEach(model -> {
             modelTblModel.addRow(new Object[]{model.getId(), model.getName(),
                 model.isAutomatic(), model.isCombustion(),
                 model.getBrand().getName()});
         });
-        this.getTable().setModel(modelTblModel);
+        table.setModel(modelTblModel);
     }
 
 }

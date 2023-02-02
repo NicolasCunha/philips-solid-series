@@ -11,52 +11,47 @@ import org.philips.solid.app.view.EditVehicle;
 
 public class VehicleUiController extends UiController {
 
-    public VehicleUiController(JFrame parent,
-            JTable table) {
-        super(parent, table);
-    }
-
     @Override
-    public void refreshData() {
+    public void refreshData(final JTable table) {
         List<Vehicle> vehicles = VehicleDao.getVehicles();
-        DefaultTableModel vehicleTblModel = (DefaultTableModel) this.getTable().getModel();
+        DefaultTableModel vehicleTblModel = (DefaultTableModel) table.getModel();
         vehicleTblModel.setRowCount(0);
         vehicles.forEach(vehicle -> {
             vehicleTblModel.addRow(new Object[]{
                 vehicle.getId(), vehicle.getColor(), vehicle.getPrice(),
                 vehicle.getModel().getName(), vehicle.getBrand().getName()});
         });
-        this.getTable().setModel(vehicleTblModel);
+        table.setModel(vehicleTblModel);
     }
 
     @Override
-    public void create() {
-        CreateVehicle createVehicle = new CreateVehicle(this.getParent(), true);
+    public void create(final JFrame parent) {
+        CreateVehicle createVehicle = new CreateVehicle(parent, true);
         createVehicle.setVisible(true);
     }
 
     @Override
-    public void update() {
-        int selectedVehicle = this.getTable().getSelectedRow();
-        long vehicleId = (long) this.getTable().getValueAt(selectedVehicle, 0);
-        EditVehicle editVehicle = new EditVehicle(this.getParent(), true, vehicleId);
+    public void update(final JFrame parent, final JTable table) {
+        int selectedVehicle = table.getSelectedRow();
+        long vehicleId = (long) table.getValueAt(selectedVehicle, 0);
+        EditVehicle editVehicle = new EditVehicle(parent, true, vehicleId);
         editVehicle.setVisible(true);
-        refreshData();
-        selectRow(selectedVehicle);
+        refreshData(table);
+        selectRow(table, selectedVehicle);
     }
 
     @Override
-    public void delete() {
-        int selectedVehicle = this.getTable().getSelectedRow();
-        long vehicleId = (long) this.getTable().getValueAt(selectedVehicle, 0);
+    public void delete(final JTable table) {
+        int selectedVehicle = table.getSelectedRow();
+        long vehicleId = (long) table.getValueAt(selectedVehicle, 0);
         VehicleDao.deleteVehicle(vehicleId);
-        this.refreshData();
+        this.refreshData(table);
 
         if (selectedVehicle - 1 < 0) {
             selectedVehicle = 1;
         }
 
-        this.selectRow(selectedVehicle - 1);
+        this.selectRow(table, selectedVehicle - 1);
     }
 
 }

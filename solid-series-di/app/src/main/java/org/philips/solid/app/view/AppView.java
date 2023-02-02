@@ -2,23 +2,23 @@ package org.philips.solid.app.view;
 
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import org.philips.solid.app.controller.ui.BrandUiController;
-import org.philips.solid.app.controller.ui.ModelUiController;
-import org.philips.solid.app.controller.ui.VehicleUiController;
+import org.philips.solid.app.controller.ui.UiController;
 
 public class AppView extends javax.swing.JFrame {
 
-    private VehicleUiController vehicleUiController;
-    private BrandUiController brandUiController;
-    private ModelUiController modelUiController;
-    
-    public AppView() {
+    private final UiController vehicleUiController;
+    private final UiController brandUiController;
+    private final UiController modelUiController;
+
+    public AppView(final UiController vehicleUiController,
+            final UiController brandUiController,
+            final UiController modelUiController) {
         initComponents();
-        this.vehicleUiController = new VehicleUiController(this, vehicleTable);
-        this.brandUiController = new BrandUiController(this, brandTable);
-        this.modelUiController = new ModelUiController(this, modelTable);
+        this.vehicleUiController = vehicleUiController;
+        this.brandUiController = brandUiController;
+        this.modelUiController = modelUiController;      
         SwingUtilities.invokeLater(() -> {
-            this.vehicleUiController.refreshData();
+            this.vehicleUiController.refreshData(vehicleTable);
         });
     }
 
@@ -234,16 +234,16 @@ public class AppView extends javax.swing.JFrame {
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         switch (this.tabbedPaneContainer.getSelectedIndex()) {
             case 0:
-                this.vehicleUiController.create();
-                this.vehicleUiController.refreshData();
+                this.vehicleUiController.create(this);
+                this.vehicleUiController.refreshData(vehicleTable);
                 break;
             case 1:
-                this.brandUiController.create();
-                this.brandUiController.refreshData();
+                this.brandUiController.create(this);
+                this.brandUiController.refreshData(brandTable);
                 break;
             case 2:
-                this.modelUiController.create();
-                this.modelUiController.refreshData();
+                this.modelUiController.create(this);
+                this.modelUiController.refreshData(modelTable);
                 break;
         }
     }//GEN-LAST:event_btnNovoActionPerformed
@@ -252,17 +252,17 @@ public class AppView extends javax.swing.JFrame {
         if (!areControllerCreated()) {
             return;
         }
-        
+
         final JTabbedPane pane = (JTabbedPane) evt.getSource();
         switch (pane.getSelectedIndex()) {
             case 0:
-                this.vehicleUiController.refreshData();
+                this.vehicleUiController.refreshData(vehicleTable);
                 break;
             case 1:
-                this.brandUiController.refreshData();
+                this.brandUiController.refreshData(brandTable);
                 break;
             case 2:
-                this.modelUiController.refreshData();
+                this.modelUiController.refreshData(modelTable);
                 break;
         }
     }//GEN-LAST:event_tabbedPaneContainerStateChanged
@@ -270,13 +270,13 @@ public class AppView extends javax.swing.JFrame {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         switch (this.tabbedPaneContainer.getSelectedIndex()) {
             case 0:
-                this.vehicleUiController.update();
+                this.vehicleUiController.update(this, vehicleTable);
                 break;
             case 1:
-                this.brandUiController.update();                
+                this.brandUiController.update(this, brandTable);
                 break;
             case 2:
-                this.modelUiController.update();                
+                this.modelUiController.update(this, modelTable);
                 break;
         }
     }//GEN-LAST:event_btnEditarActionPerformed
@@ -284,13 +284,13 @@ public class AppView extends javax.swing.JFrame {
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
         switch (this.tabbedPaneContainer.getSelectedIndex()) {
             case 0:
-                this.vehicleUiController.delete();                
+                this.vehicleUiController.delete(vehicleTable);
                 break;
             case 1:
-                this.brandUiController.delete();                
+                this.brandUiController.delete(brandTable);
                 break;
             case 2:
-                this.modelUiController.delete();
+                this.modelUiController.delete(modelTable);
                 break;
         }
     }//GEN-LAST:event_btnExcluirActionPerformed
@@ -298,7 +298,7 @@ public class AppView extends javax.swing.JFrame {
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnSairActionPerformed
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel brandPanel;
     private javax.swing.JTable brandTable;
@@ -316,12 +316,6 @@ public class AppView extends javax.swing.JFrame {
     private javax.swing.JScrollPane vehicleTableScrollPane;
     // End of variables declaration//GEN-END:variables
 
-    private void createUiControllers() {
-        this.vehicleUiController = new VehicleUiController(this, vehicleTable);
-        this.brandUiController = new BrandUiController(this, brandTable);
-        this.modelUiController = new ModelUiController(this, modelTable);
-    }
-    
     private boolean areControllerCreated() {
         return vehicleUiController != null
                 && brandUiController != null

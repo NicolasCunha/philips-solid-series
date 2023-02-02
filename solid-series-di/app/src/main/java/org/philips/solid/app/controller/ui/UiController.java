@@ -5,40 +5,24 @@ import javax.swing.JTable;
 
 public abstract class UiController {
 
-    private final JFrame parent;
-    private final JTable table;
+    public abstract void create(final JFrame parent);
 
-    public UiController(JFrame parent, JTable table) {
-        this.parent = parent;
-        this.table = table;
-    }
+    public abstract void update(final JFrame parent, final JTable table);
 
-    public abstract void create();
+    public abstract void delete(final JTable table);
 
-    public abstract void update();
+    public abstract void refreshData(final JTable table);
 
-    public abstract void delete();
-
-    public abstract void refreshData();
-
-    public void selectRow(int row) {
-        if (this.getTable().getRowCount() == 0) {
+    public void selectRow(final JTable table, int row) {
+        if (table.getRowCount() == 0) {
             return;
         }
 
-        if (this.getTable().getRowCount() < row) {
+        if (table.getRowCount() < row) {
             return;
         }
         
-        this.getTable().setRowSelectionInterval(row, row);
-    }
-
-    public JFrame getParent() {
-        return parent;
-    }
-
-    public JTable getTable() {
-        return table;
+        table.setRowSelectionInterval(row, row);
     }
 
 }

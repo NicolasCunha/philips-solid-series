@@ -15,6 +15,8 @@ public class Model {
         this.automatic = automatic;
         this.combustion = combustion;
         this.brand = brand;
+        // Default value for demo purposes
+        this.type = ModelEngineType.COMBUSTION;
     }
 
     public Brand getBrand() {
