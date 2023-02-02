@@ -1,6 +1,6 @@
 package org.philips.solid.app.model;
 
-public class HybridVehicle extends Vehicle {
+public class HybridVehicle extends Vehicle implements ElectricEngine, CombustionEngine {
 
     public HybridVehicle(long id, String color, Double price, Brand brand, Model model) {
         super(id, color, price, brand, model);

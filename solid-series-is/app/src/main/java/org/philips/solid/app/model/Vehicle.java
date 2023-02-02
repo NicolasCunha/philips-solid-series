@@ -1,6 +1,6 @@
 package org.philips.solid.app.model;
 
-public class Vehicle implements CarBehavior {
+public abstract class Vehicle {
 
     private long id;
     private String color;
@@ -54,16 +54,6 @@ public class Vehicle implements CarBehavior {
 
     public void setModel(Model model) {
         this.model = model;
-    }
-
-    @Override
-    public void refillGas() {
-        System.out.println("Refilling gas...");
-    }
-
-    @Override
-    public void recharge() {
-        throw new UnsupportedOperationException("Combustion cars don't recharge.");
     }
 
 }

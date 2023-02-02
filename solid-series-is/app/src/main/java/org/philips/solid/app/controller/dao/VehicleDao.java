@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.philips.solid.app.controller.db.ConnectionFactory;
+import org.philips.solid.app.model.CombustionVehicle;
 import org.philips.solid.app.model.ElectricVehicle;
 import org.philips.solid.app.model.HybridVehicle;
 import org.philips.solid.app.model.Model;
@@ -145,7 +146,7 @@ public class VehicleDao {
 
     private static Vehicle createVehicle(final ResultSet rs, final Model model) throws SQLException {
         Vehicle vehicle;
-        vehicle = new Vehicle(
+        vehicle = new CombustionVehicle(
                 rs.getLong("ID"),
                 rs.getString("COLOR"),
                 rs.getDouble("PRICE"),
